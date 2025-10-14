@@ -3,7 +3,7 @@ package com.example.starwarscompose.feature.search.composables
 import androidx.compose.runtime.Composable
 
 @Composable
-fun SearchScreen (
+fun SearchScreen(
     state: SearchScreenState
 ) {
 
@@ -12,6 +12,7 @@ fun SearchScreen (
 
 data class SearchScreenState(
     val title: String,
+    val searchResultList: List<SearchResultItem>,
 )
 
 data class SearchResultItem(
