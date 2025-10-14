@@ -1,5 +1,7 @@
 package com.example.starwarscompose.repository
 
+import com.example.starwarscompose.model.Person
+
 interface SearchRepository {
-    fun getSearchResults(query: String): List<String>
+    suspend fun getSearchResults(query: String): List<Person>
 }

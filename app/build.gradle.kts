@@ -52,6 +52,19 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
 
+    implementation(libs.retrofit)
+    implementation(libs.converter.moshi)
+    implementation(libs.moshi)
+
+    implementation(libs.okhttp)
+    implementation(libs.coroutines.core)
+    implementation(libs.coroutines.android)
+    implementation(libs.json)
+
+    implementation(libs.moshi.kotlin)
+
+    implementation(libs.androidx.navigation.compose)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
