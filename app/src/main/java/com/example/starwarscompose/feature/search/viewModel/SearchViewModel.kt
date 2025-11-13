@@ -32,7 +32,6 @@ class SearchViewModel(private val searchUseCase: SearchUseCase) : ViewModel() {
             _viewState.value = _viewState.value.copy(isLoading = true)
 
             val results = searchUseCase(query)
-            println("<><><> http results: " + results)
             val mappedResults = results.map { person ->
                 SearchResultItem(
                     title = person.name,
