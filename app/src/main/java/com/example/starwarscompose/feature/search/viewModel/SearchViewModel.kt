@@ -2,47 +2,53 @@ package com.example.starwarscompose.feature.search.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.starwarscompose.feature.search.composables.SearchIntent
 import com.example.starwarscompose.feature.search.composables.SearchResultItem
-import com.example.starwarscompose.feature.search.composables.SearchScreenState
 import com.example.starwarscompose.usecase.SearchUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class SearchViewModel(private val searchUseCase: SearchUseCase) : ViewModel() {
 
-    private val _viewState = MutableStateFlow(
-        SearchScreenState(
-            query = "",
-            searchResultList = emptyList(),
-            isLoading = false,
-            onQueryChanged = { query -> updateQuery(query) },
-            onSearch = { query -> performSearch(query) }
-        )
-    )
-    val viewState: StateFlow<SearchScreenState> = _viewState.asStateFlow()
+    private val _state = MutableStateFlow(SearchViewState())
+    val state: StateFlow<SearchViewState> = _state
 
-    private fun updateQuery(query: String) {
-        _viewState.value = _viewState.value.copy(query = query)
+    fun handleIntent(intent: SearchIntent) {
+        when (intent) {
+            is SearchIntent.QueryChanged ->
+                _state.value = _state.value.copy(query = intent.query)
+
+            SearchIntent.SubmitSearch ->
+                search(_state.value.query)
+        }
     }
 
-    private fun performSearch(query: String) {
+    private fun search(query: String) {
+        if (query.isBlank()) return
+
         viewModelScope.launch {
-            _viewState.value = _viewState.value.copy(isLoading = true)
+            _state.value = _state.value.copy(isLoading = true, error = null)
 
-            val results = searchUseCase(query)
-            val mappedResults = results.map { person ->
-                SearchResultItem(
-                    title = person.name,
-                    description = "Height: ${person.height}, Birth Year: ${person.birthYear}"
-                )
-            }
-
-            _viewState.value = _viewState.value.copy(
-                searchResultList = mappedResults,
-                isLoading = false
-            )
+            runCatching { searchUseCase(query) }
+                .onSuccess { people ->
+                    val items = people.map { person ->
+                        SearchResultItem(
+                            title = person.name,
+                            description = "Height: ${person.height}, Birth Year: ${person.birthYear}"
+                        )
+                    }
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        results = items
+                    )
+                }
+                .onFailure { e ->
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        error = e.message ?: "Unknown error"
+                    )
+                }
         }
     }
 }

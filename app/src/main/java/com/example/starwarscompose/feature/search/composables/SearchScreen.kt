@@ -1,7 +1,16 @@
 package com.example.starwarscompose.feature.search.composables
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -9,8 +18,16 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.*
+import androidx.compose.material3.DividerDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,11 +36,13 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.starwarscompose.feature.search.viewModel.SearchViewState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
-    state: SearchScreenState,
+    state: SearchViewState,
+    onIntent: (SearchIntent) -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -35,6 +54,7 @@ fun SearchScreen(
     ) {
 
         TopAppBar(
+            modifier = Modifier.background(Color.Transparent),
             title = { Text("Star Wars Search") },
         )
 
@@ -47,7 +67,7 @@ fun SearchScreen(
             OutlinedTextField(
                 value = state.query,
                 onValueChange = { newQuery ->
-                    state.onQueryChanged(newQuery) // just update the query
+                    onIntent(SearchIntent.QueryChanged(newQuery))
                 },
                 modifier = Modifier.weight(1f),
                 label = { Text("Search People") },
@@ -55,7 +75,7 @@ fun SearchScreen(
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(
                     onSearch = {
-                        state.onSearch(state.query) // trigger search
+                        onIntent(SearchIntent.SubmitSearch)
                         focusManager.clearFocus()
                     }
                 )
@@ -65,7 +85,7 @@ fun SearchScreen(
 
             IconButton(
                 onClick = {
-                    state.onSearch(state.query)
+                    onIntent(SearchIntent.SubmitSearch)
                     focusManager.clearFocus()
                 },
                 modifier = Modifier
@@ -88,7 +108,7 @@ fun SearchScreen(
         }
 
         LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(state.searchResultList) { item ->
+            items(state.results) { item ->
                 SearchResultRow(item)
                 HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
             }
@@ -112,30 +132,26 @@ fun SearchResultRow(item: SearchResultItem) {
 @Composable
 fun SearchScreenPreview() {
     SearchScreen(
-        state = SearchScreenState(
-            query = "",
-            searchResultList = listOf(
+        state = SearchViewState(
+            query = "Luke",
+            results = listOf(
                 SearchResultItem("Luke Skywalker", "Height: 172, Birth Year: 19BBY"),
-                SearchResultItem("Darth Vader", "Height: 202, Birth Year: 41.9BBY")
-            ),
-            isLoading = false,
-            onQueryChanged = {},
-            onSearch = {}
+                SearchResultItem("Darth Vader", "Height: 202, Birth Year: 41.9BBY"),
+            )
         ),
+        onIntent = {},
     )
 }
 
-// --- State definitions ---
 
-data class SearchScreenState(
-    val query: String = "",
-    val searchResultList: List<SearchResultItem> = emptyList(),
-    val isLoading: Boolean = false,
-    val onQueryChanged: (String) -> Unit = {},
-    val onSearch: (String) -> Unit = {}
-)
+// --- State definitions ---
 
 data class SearchResultItem(
     val title: String,
     val description: String,
 )
+
+sealed interface SearchIntent {
+    data class QueryChanged(val query: String) : SearchIntent
+    object SubmitSearch : SearchIntent
+}

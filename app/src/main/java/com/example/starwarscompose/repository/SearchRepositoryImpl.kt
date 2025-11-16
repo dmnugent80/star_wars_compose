@@ -10,7 +10,6 @@ class SearchRepositoryImpl(
     override suspend fun getSearchResults(query: String): List<Person> {
         return try {
             val response = api.searchPeople(query)
-            println("<><><> response $response")
             response.results.map {
                 Person(
                     name = it.name,
