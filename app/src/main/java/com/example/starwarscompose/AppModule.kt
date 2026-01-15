@@ -23,7 +23,7 @@ val appModule = module {
     // API
     single {
         Retrofit.Builder()
-            .baseUrl("https://swapi.dev/api/") // Star Wars API base URL
+            .baseUrl("https://www.swapi.tech/api/") // Star Wars API base URL
             .addConverterFactory(MoshiConverterFactory.create(get()))
             .build()
             .create(PeopleSearchApi::class.java)

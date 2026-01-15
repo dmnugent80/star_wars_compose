@@ -118,13 +118,18 @@ fun SearchScreen(
 
 @Composable
 fun SearchResultRow(item: SearchResultItem) {
-    Column(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = item.title, style = MaterialTheme.typography.titleMedium)
-        Text(text = item.description, style = MaterialTheme.typography.bodyMedium)
+        AnimatedIndicator(animationType = item.animationType)
+        Spacer(modifier = Modifier.width(12.dp))
+        Column {
+            Text(text = item.title, style = MaterialTheme.typography.titleMedium)
+            Text(text = item.description, style = MaterialTheme.typography.bodyMedium)
+        }
     }
 }
 
@@ -135,8 +140,10 @@ fun SearchScreenPreview() {
         state = SearchViewState(
             query = "Luke",
             results = listOf(
-                SearchResultItem("Luke Skywalker", "Height: 172, Birth Year: 19BBY"),
-                SearchResultItem("Darth Vader", "Height: 202, Birth Year: 41.9BBY"),
+                SearchResultItem("Luke Skywalker", "Height: 172, Birth Year: 19BBY", AnimationType.ROTATE_BLUE),
+                SearchResultItem("Darth Vader", "Height: 202, Birth Year: 41.9BBY", AnimationType.PULSE_RED),
+                SearchResultItem("Chewbacca", "Height: 228, Birth Year: 200BBY", AnimationType.SCALE_GREEN),
+                SearchResultItem("R2-D2", "Height: 96, Birth Year: 33BBY", AnimationType.ORBIT_PURPLE),
             )
         ),
         onIntent = {},
@@ -149,6 +156,7 @@ fun SearchScreenPreview() {
 data class SearchResultItem(
     val title: String,
     val description: String,
+    val animationType: AnimationType = AnimationType.FADE_GRAY,
 )
 
 sealed interface SearchIntent {
