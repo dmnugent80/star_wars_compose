@@ -26,6 +26,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -37,6 +38,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.starwarscompose.feature.search.viewModel.SearchViewState
+import com.example.starwarscompose.ui.theme.StarWarsComposeTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,13 +51,19 @@ fun SearchScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .statusBarsPadding()
             .padding(16.dp)
     ) {
 
         TopAppBar(
             modifier = Modifier.background(Color.Transparent),
-            title = { Text("Star Wars Search") },
+            title = {
+                Text(
+                    "Star Wars Search",
+                    color = MaterialTheme.colorScheme.primary
+                )
+            },
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -78,6 +86,15 @@ fun SearchScreen(
                         onIntent(SearchIntent.SubmitSearch)
                         focusManager.clearFocus()
                     }
+                ),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    unfocusedLabelColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                    cursorColor = MaterialTheme.colorScheme.primary
                 )
             )
 
@@ -90,12 +107,12 @@ fun SearchScreen(
                 },
                 modifier = Modifier
                     .size(48.dp)
-                    .background(color = Color(0xFF4CAF50), shape = CircleShape)
+                    .background(color = MaterialTheme.colorScheme.primary, shape = CircleShape)
             ) {
                 Icon(
                     imageVector = Icons.Default.Check,
                     contentDescription = "Search",
-                    tint = Color.White
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }
@@ -110,7 +127,11 @@ fun SearchScreen(
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(state.results) { item ->
                 SearchResultRow(item)
-                HorizontalDivider(Modifier, DividerDefaults.Thickness, DividerDefaults.color)
+                HorizontalDivider(
+                    modifier = Modifier,
+                    thickness = DividerDefaults.Thickness,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
+                )
             }
         }
     }
@@ -127,8 +148,16 @@ fun SearchResultRow(item: SearchResultItem) {
         AnimatedIndicator(animationType = item.animationType)
         Spacer(modifier = Modifier.width(12.dp))
         Column {
-            Text(text = item.title, style = MaterialTheme.typography.titleMedium)
-            Text(text = item.description, style = MaterialTheme.typography.bodyMedium)
+            Text(
+                text = item.title,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Text(
+                text = item.description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+            )
         }
     }
 }
@@ -136,18 +165,20 @@ fun SearchResultRow(item: SearchResultItem) {
 @Preview(showBackground = true)
 @Composable
 fun SearchScreenPreview() {
-    SearchScreen(
-        state = SearchViewState(
-            query = "Luke",
-            results = listOf(
-                SearchResultItem("Luke Skywalker", "Height: 172, Birth Year: 19BBY", AnimationType.ROTATE_BLUE),
-                SearchResultItem("Darth Vader", "Height: 202, Birth Year: 41.9BBY", AnimationType.PULSE_RED),
-                SearchResultItem("Chewbacca", "Height: 228, Birth Year: 200BBY", AnimationType.SCALE_GREEN),
-                SearchResultItem("R2-D2", "Height: 96, Birth Year: 33BBY", AnimationType.ORBIT_PURPLE),
-            )
-        ),
-        onIntent = {},
-    )
+    StarWarsComposeTheme {
+        SearchScreen(
+            state = SearchViewState(
+                query = "Luke",
+                results = listOf(
+                    SearchResultItem("Luke Skywalker", "Height: 172, Birth Year: 19BBY", AnimationType.ROTATE_BLUE),
+                    SearchResultItem("Darth Vader", "Height: 202, Birth Year: 41.9BBY", AnimationType.PULSE_RED),
+                    SearchResultItem("Chewbacca", "Height: 228, Birth Year: 200BBY", AnimationType.SCALE_GREEN),
+                    SearchResultItem("R2-D2", "Height: 96, Birth Year: 33BBY", AnimationType.ORBIT_PURPLE),
+                )
+            ),
+            onIntent = {},
+        )
+    }
 }
 
 
