@@ -2,8 +2,9 @@ package com.example.starwarscompose.repository
 
 import com.example.starwarscompose.api.PeopleSearchApi
 import com.example.starwarscompose.model.Person
+import javax.inject.Inject
 
-class SearchRepositoryImpl(
+class SearchRepositoryImpl @Inject constructor(
     private val api: PeopleSearchApi
 ) : SearchRepository {
 

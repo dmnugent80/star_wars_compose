@@ -7,11 +7,16 @@ import com.example.starwarscompose.feature.search.composables.SearchIntent
 import com.example.starwarscompose.feature.search.composables.SearchResultItem
 import com.example.starwarscompose.model.Person
 import com.example.starwarscompose.usecase.SearchUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SearchViewModel(private val searchUseCase: SearchUseCase) : ViewModel() {
+@HiltViewModel
+class SearchViewModel @Inject constructor(
+    private val searchUseCase: SearchUseCase
+) : ViewModel() {
 
     private val _state = MutableStateFlow(SearchViewState())
     val state: StateFlow<SearchViewState> = _state
