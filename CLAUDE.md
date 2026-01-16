@@ -42,10 +42,15 @@ Intent → ViewModel → UseCase → Repository → API
 
 ### Dependency Injection
 
-Uses **Koin** for DI. All dependencies defined in `AppModule.kt`:
-- Moshi for JSON parsing
-- Retrofit for networking
-- Repository, UseCase, and ViewModel bindings
+Uses **Dagger Hilt** for DI. Modules defined in `di/`:
+- `NetworkModule.kt`: Provides Moshi, Retrofit, and PeopleSearchApi
+- `RepositoryModule.kt`: Binds SearchRepository interface to implementation
+
+Key annotations:
+- `@HiltAndroidApp` on Application class
+- `@AndroidEntryPoint` on Activity
+- `@HiltViewModel` + `@Inject` on ViewModels
+- `@Inject constructor` on repositories and use cases
 
 ### Theme
 
