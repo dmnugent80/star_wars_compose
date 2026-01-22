@@ -28,6 +28,10 @@ class SearchViewModel @Inject constructor(
 
             SearchIntent.SubmitSearch ->
                 search(_state.value.query)
+
+            is SearchIntent.PersonClicked -> {
+                // Handled by navigation in NavHost
+            }
         }
     }
 
@@ -46,7 +50,13 @@ class SearchViewModel @Inject constructor(
                         SearchResultItem(
                             title = person.name,
                             description = "Height: ${person.height}, Birth Year: ${person.birthYear}",
-                            animationType = deriveAnimationType(person)
+                            animationType = deriveAnimationType(person),
+                            name = person.name,
+                            height = person.height,
+                            hairColor = person.hairColor,
+                            eyeColor = person.eyeColor,
+                            birthYear = person.birthYear,
+                            filmUrls = person.films
                         )
                     }
                     _state.value = _state.value.copy(

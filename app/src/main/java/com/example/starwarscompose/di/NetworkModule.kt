@@ -1,5 +1,6 @@
 package com.example.starwarscompose.di
 
+import com.example.starwarscompose.api.FilmApi
 import com.example.starwarscompose.api.PeopleSearchApi
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -36,5 +37,11 @@ object NetworkModule {
     @Singleton
     fun providePeopleSearchApi(retrofit: Retrofit): PeopleSearchApi {
         return retrofit.create(PeopleSearchApi::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFilmApi(retrofit: Retrofit): FilmApi {
+        return retrofit.create(FilmApi::class.java)
     }
 }

@@ -1,6 +1,10 @@
 package com.example.starwarscompose.feature.search.composables
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -40,10 +44,11 @@ import androidx.compose.ui.unit.dp
 import com.example.starwarscompose.feature.search.viewModel.SearchViewState
 import com.example.starwarscompose.ui.theme.StarWarsComposeTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun SearchScreen(
+fun SharedTransitionScope.SearchScreen(
     state: SearchViewState,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     onIntent: (SearchIntent) -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
@@ -126,7 +131,11 @@ fun SearchScreen(
 
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(state.results) { item ->
-                SearchResultRow(item)
+                SearchResultRow(
+                    item = item,
+                    animatedVisibilityScope = animatedVisibilityScope,
+                    onClick = { onIntent(SearchIntent.PersonClicked(item)) }
+                )
                 HorizontalDivider(
                     modifier = Modifier,
                     thickness = DividerDefaults.Thickness,
@@ -137,21 +146,37 @@ fun SearchScreen(
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun SearchResultRow(item: SearchResultItem) {
+fun SharedTransitionScope.SearchResultRow(
+    item: SearchResultItem,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    onClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable(onClick = onClick)
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        AnimatedIndicator(animationType = item.animationType)
+        AnimatedIndicator(
+            animationType = item.animationType,
+            modifier = Modifier.sharedElement(
+                state = rememberSharedContentState(key = "indicator-${item.name}"),
+                animatedVisibilityScope = animatedVisibilityScope
+            )
+        )
         Spacer(modifier = Modifier.width(12.dp))
         Column {
             Text(
                 text = item.title,
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.sharedElement(
+                    state = rememberSharedContentState(key = "name-${item.name}"),
+                    animatedVisibilityScope = animatedVisibilityScope
+                )
             )
             Text(
                 text = item.description,
@@ -165,19 +190,9 @@ fun SearchResultRow(item: SearchResultItem) {
 @Preview(showBackground = true)
 @Composable
 fun SearchScreenPreview() {
+    // Preview disabled due to SharedTransitionScope requirement
     StarWarsComposeTheme {
-        SearchScreen(
-            state = SearchViewState(
-                query = "Luke",
-                results = listOf(
-                    SearchResultItem("Luke Skywalker", "Height: 172, Birth Year: 19BBY", AnimationType.ROTATE_BLUE),
-                    SearchResultItem("Darth Vader", "Height: 202, Birth Year: 41.9BBY", AnimationType.PULSE_RED),
-                    SearchResultItem("Chewbacca", "Height: 228, Birth Year: 200BBY", AnimationType.SCALE_GREEN),
-                    SearchResultItem("R2-D2", "Height: 96, Birth Year: 33BBY", AnimationType.ORBIT_PURPLE),
-                )
-            ),
-            onIntent = {},
-        )
+        Text("Preview not available with shared transitions")
     }
 }
 
@@ -188,9 +203,16 @@ data class SearchResultItem(
     val title: String,
     val description: String,
     val animationType: AnimationType = AnimationType.FADE_GRAY,
+    val name: String,
+    val height: String,
+    val hairColor: String,
+    val eyeColor: String,
+    val birthYear: String,
+    val filmUrls: List<String>
 )
 
 sealed interface SearchIntent {
     data class QueryChanged(val query: String) : SearchIntent
     object SubmitSearch : SearchIntent
+    data class PersonClicked(val item: SearchResultItem) : SearchIntent
 }
