@@ -17,6 +17,8 @@ moshiKotlin = "1.15.2"
 navigationCompose = "2.9.5"
 okhttp = "4.11.0"
 coroutines = "1.7.3"
+mockk = "1.13.8"
+turbine = "1.0.0"
 json = "20230618"
 kotlinxSerialization = "1.6.3"
 retrofit = "3.0.0"
@@ -51,6 +53,9 @@ json = { group = "org.json", name = "json", version.ref = "json" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
+coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

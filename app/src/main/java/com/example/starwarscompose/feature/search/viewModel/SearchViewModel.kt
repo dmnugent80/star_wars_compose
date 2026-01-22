@@ -41,12 +41,10 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true, error = null)
 
-            println("<><><> hello 1")
             runCatching { searchUseCase(query) }
                 .onSuccess { people ->
                     val items = people.map { person ->
 
-                        println("<><><> hello  person: " + person.name)
                         SearchResultItem(
                             title = person.name,
                             description = "Height: ${person.height}, Birth Year: ${person.birthYear}",
